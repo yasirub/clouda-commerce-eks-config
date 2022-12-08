@@ -1,0 +1,39 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: efs-sc
+  namespace: clouda-commerce
+provisioner: efs.csi.aws.com
+---
+
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: efs-pv
+spec:
+  capacity:
+    storage: 6Gi
+  volumeMode: Filesystem
+  accessModes:
+  - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: fs-0ef945ac0b1eb951d #this should be replace every time new efs created
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: efs-claim
+  namespace: clouda-commerce
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi
+
