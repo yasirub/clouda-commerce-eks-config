@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migrations
+  namespace: clouda-commerce
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/api: api
+    spec:
+      containers:
+        - name: django
+          image: 210226302225.dkr.ecr.us-east-1.amazonaws.com/saleor-api:0.0.1
+          #command: ['python', 'manage.py', 'migrate']
+          command: ["/bin/bash", "-c", "python manage.py migrate;python manage.py collectstatic --noinput;python manage.py populatedb --createsuperuser"]
+          env:
+            - name: POSTGRES_USER
+              value: saleor
+
+            - name: POSTGRES_PASSWORD
+              value: saleor
+
+            - name: POSTGRES_HOST
+              value: db
+            - name: DATABASE_URL
+              value: "postgres://saleor:saleor@db/saleor"
+      restartPolicy: Never
+  backoffLimit: 5
